@@ -113,19 +113,35 @@ def main():
     
 
     while not continuar:
-        lista = ast.literal_eval(input("Lista de pedidos: "))
+        try:
+            lista = ast.literal_eval(input("Lista de pedidos: "))
+        except (ValueError, SyntaxError):
+            print("A lista deve ser no formato [(prioridade, tempo), ...]")
+            continue
 
         print("\n")
+
+        if not isinstance(lista, list):
+            print("O input deve ser uma lista.")
+            continue
+
 
         if len(lista) != 10:
             print(f"A lista deve ter 10 pedidos. Foram passados {len(lista)}.")
             continue
 
-        if not (isinstance(lista, list) and isinstance(lista[0], tuple)):
-            print("A lista deve ser no formato [(prioridade, tempo), ...]")
+        valido = all(
+            isinstance(p, tuple)
+            and len(p) == 2
+            and all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in p)
+            for p in lista
+        )
+        if not valido:
+            print("Cada pedido deve ser um tuplo (prioridade, tempo) com dois números.")
             continue
 
         continuar = True
+
 
     analisarPedidos(lista)
     
